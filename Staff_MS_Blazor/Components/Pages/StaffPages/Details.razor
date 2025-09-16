@@ -1,0 +1,62 @@
+﻿@page "/staff/details"
+@using Microsoft.EntityFrameworkCore
+@using Staff_MS_Blazor.Models
+@inject IDbContextFactory<Staff_MS_Blazor.Data.AppDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h2>Staff Details</h2>
+
+<div>
+    <h2>Staff</h2>
+    <hr />
+    @if (staff is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@staff.Name</dd>
+            <dt class="col-sm-2">Birthday</dt>
+            <dd class="col-sm-10">@staff.Birthday</dd>
+            <dt class="col-sm-2">Phone</dt>
+            <dd class="col-sm-10">@staff.Phone</dd>
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@staff.Email</dd>
+            <dt class="col-sm-2">Address</dt>
+            <dd class="col-sm-10">@staff.Address</dd>
+            <dt class="col-sm-2">Position</dt>
+            <dd class="col-sm-10">@staff.Position</dd>
+            <dt class="col-sm-2">Department</dt>
+            <dd class="col-sm-10">@staff.Department</dd>
+            <dt class="col-sm-2">Salary</dt>
+            <dd class="col-sm-10">@staff.Salary</dd>
+            <dt class="col-sm-2">HireDate</dt>
+            <dd class="col-sm-10">@staff.HireDate</dd>
+        </dl>
+        <div>
+            <a class="btn btn-warning" href="@($"staff/edit?id={staff.Id}")">Edit</a>
+            <a class="btn btn-secondary mx-2" href="/staff">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Staff? staff;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        staff = await context.Staff.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (staff is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

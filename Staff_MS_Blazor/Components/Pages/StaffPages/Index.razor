@@ -1,0 +1,49 @@
+﻿@page "/staff"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Staff_MS_Blazor.Models
+@using Staff_MS_Blazor.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Staff_MS_Blazor.Data.AppDbContext> DbFactory
+
+<PageTitle>Staff Information</PageTitle>
+
+<style>
+    .table-centered td {
+        vertical-align: middle !important;
+    }
+</style>
+
+<h1>Staff Members Information</h1>
+
+<p>
+    <a class="btn btn-primary" href="staff/create">Create New</a>
+</p>
+
+<QuickGrid Class="table table-centered" Items="context.Staff">
+    <PropertyColumn Property="staff => staff.Name"/>
+    <PropertyColumn Property="staff => staff.Birthday" Title="DateOfBirth" Format="dd/MM/yyyy"/>
+    <PropertyColumn Property="staff => staff.Phone" />
+    <PropertyColumn Property="staff => staff.Email" />
+   <!-- <PropertyColumn Property="staff => staff.Address" /> -->
+    <PropertyColumn Property="staff => staff.Position" />
+   <!-- <PropertyColumn Property="staff => staff.Department" /> -->
+   <!-- <PropertyColumn Property="staff => staff.Salary" /> -->
+   <!-- <PropertyColumn Property="staff => staff.HireDate" Format="dd/MM/yyyy"/> -->
+    <TemplateColumn Context="staff">
+        <a class="btn btn-warning" href="@($"staff/edit?id={staff.Id}")">Edit</a> 
+        <a class="btn btn-info" href="@($"staff/details?id={staff.Id}")">Details</a> 
+        <a class="btn btn-danger" href="@($"staff/delete?id={staff.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private AppDbContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
